@@ -12,6 +12,31 @@ class ItemCart extends StatelessWidget {
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context, listen: false);
     return Dismissible(
+      confirmDismiss: (value) {
+        return showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              title: const Text('Are you sure?'),
+              content: const Text('Do you want to remove item from the cart?'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: const Text('NO'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                  child: const Text('YES '),
+                ),
+              ],
+            );
+          },
+        );
+      },
       onDismissed: (d) {
         Provider.of<CartProvider>(context, listen: false).removeItem(productId);
       },

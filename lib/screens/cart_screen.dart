@@ -41,12 +41,10 @@ class CartScreen extends StatelessWidget {
                   TextButton(
                     onPressed: cart.items.isEmpty
                         ? null
-                        : () {
-                            Provider.of<Orders>(context, listen: false)
-                                .addOrder(
-                              cart.items.values.toList(),
-                              cart.totalAmount,
-                            );
+                        : () async {
+                            await Provider.of<Orders>(context, listen: false)
+                                .addOrder(cart.items.values.toList(),
+                                    cart.totalAmount);
                             cart.clear();
                           },
                     child: const Text('Order now'),

@@ -8,15 +8,18 @@ import '../models/order.dart';
 
 class Orders with ChangeNotifier {
   List<Order> _orders = [];
+  final String? authToken;
+  final String? userId;
+
+  Orders(this.authToken, this._orders, this.userId);
 
   List<Order> get orders {
     return [..._orders];
   }
 
   Future<void> addOrder(List<Cart> cartProduct, double total) async {
-    final url = Uri.https(
-        'todoor-49ebd-default-rtdb.europe-west1.firebasedatabase.app',
-        '/orders.json');
+    final url = Uri.parse(
+        'https://todoor-49ebd-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId.json?auth=$authToken');
     final timestamp = DateTime.now();
     try {
       final response = await http.post(
@@ -53,9 +56,8 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchAndSetOrders() async {
-    final url = Uri.https(
-        'todoor-49ebd-default-rtdb.europe-west1.firebasedatabase.app',
-        '/orders.json');
+    final url = Uri.parse(
+        'https://todoor-49ebd-default-rtdb.europe-west1.firebasedatabase.app/orders/$userId.json?auth=$authToken');
     final response = await http.get(url);
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
     List<Order> loadedProduct = [];

@@ -20,19 +20,16 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void toggleFavoriteStatus() async {
+  void toggleFavoriteStatus(authToken, userId) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
-    final url = Uri.https(
-        'todoor-49ebd-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products/$id.json');
+    final url = Uri.parse(
+        'https://todoor-49ebd-default-rtdb.europe-west1.firebasedatabase.app/userFavorites/$userId/$id.json?auth=$authToken');
     try {
-      await http.patch(
+      await http.put(
         url,
-        body: json.encode(
-          {'isFavorite': isFavorite},
-        ),
+        body: json.encode(isFavorite),
       );
     } catch (e) {
       isFavorite = oldStatus;

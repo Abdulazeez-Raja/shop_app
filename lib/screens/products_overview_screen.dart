@@ -14,6 +14,7 @@ enum FiltersOptions {
 }
 
 class ProductsOverviewScreen extends StatefulWidget {
+  static const routeName = '/product-overview';
   const ProductsOverviewScreen({Key? key}) : super(key: key);
 
   @override
@@ -22,24 +23,6 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showFavoritesOnly = false;
-  var _isInit = true;
-  var _isLoading = false;
-
-  @override
-  void didChangeDependencies() {
-    if (_isInit) {
-      setState(() {
-        _isLoading = true;
-      });
-      Provider.of<Products>(context).fetchAndSetProduct().then((value) {
-        setState(() {
-          _isLoading = false;
-        });
-      });
-    }
-    _isInit = false;
-    super.didChangeDependencies();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,13 +69,20 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: _isLoading
-          ? const Center(
+      body: FutureBuilder(
+        future: Provider.of<Products>(context).fetchAndSetProduct(),
+        builder: (context, snap) {
+          if (snap.connectionState == ConnectionState.waiting) {
+            return const Center(
               child: CircularProgressIndicator.adaptive(),
-            )
-          : ProductsGrid(
+            );
+          } else {
+            return ProductsGrid(
               showFavorites: _showFavoritesOnly,
-            ),
+            );
+          }
+        },
+      ),
     );
   }
 }
